@@ -116,14 +116,18 @@ elegantshop/
 │   ├── checkout/          # Checkout process
 │   ├── orders/            # Order management
 │   ├── products/          # Product catalog
-│   └── wishlist/          # User wishlist
+│   ├── wishlist/          # User wishlist
+│   ├── components/        # Page-specific components
+│   └── hooks/             # Page-specific hooks
 ├── components/            # Reusable components
 │   ├── ui/               # UI component library
+│   ├── auth/             # Authentication components
+│   ├── header/           # Header components
 │   ├── Header.tsx        # Navigation header
 │   ├── ProductCard.tsx   # Product display card
 │   └── ...
 ├── lib/                  # Utilities and configurations
-│   ├── supabase.ts      # Database client
+│   ├── supabase/         # Supabase client and helpers
 │   └── utils.ts         # Helper functions
 ├── store/               # State management
 │   └── useStore.ts      # Zustand store

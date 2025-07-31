@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { Product } from '@/types';
-import { getProductById, updateProduct, deleteProduct } from '@/lib/supabase';
+import { getProductById, updateProduct, deleteProduct } from '@/lib/supabase/products';
 import { ArrowLeft, Edit, Trash2, Star, Eye, EyeOff } from 'lucide-react';
 import Link from 'next/link';
 

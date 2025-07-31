@@ -60,3 +60,21 @@ export interface User {
   status: 'active' | 'inactive';
   created_at: string;
 }
+
+export interface ProductFormData {
+  name: string;
+  description: string;
+  originalPrice: number;
+  discountPercentage: number;
+  category: string;
+  quantity: number;
+  sizes: string[];
+  colors: string[];
+  images: File[];
+  deliveryOptions: {
+    lagosPickup: boolean;
+    lagosDoor: boolean;
+    outsidePickup: boolean;
+    outsideDoor: boolean;
+  };
+}

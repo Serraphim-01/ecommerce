@@ -3,7 +3,8 @@
 import { useState, useEffect } from 'react';
 import { User, Trash2, UserCheck, UserX } from 'lucide-react';
 import { User as UserType } from '@/types';
-import { getUsers, updateUserStatus, supabase } from '@/lib/supabase';
+import { getUsers, updateUserStatus } from '@/lib/supabase/users';
+import { supabase } from '@/lib/supabase/client';
 import Link from 'next/link';
 
 const CustomersPage = () => {

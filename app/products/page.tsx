@@ -5,7 +5,7 @@ import { Filter, Search, SlidersHorizontal } from 'lucide-react';
 import { motion } from 'framer-motion';
 import ProductCard from '@/components/ProductCard';
 import { Product } from '@/types';
-import { getProducts, searchProducts, getProductsByCategory } from '@/lib/supabase';
+import { getProducts, searchProducts, getProductsByCategory } from '@/lib/supabase/products';
 
 const ProductsPage = () => {
   const [products, setProducts] = useState<Product[]>([]);

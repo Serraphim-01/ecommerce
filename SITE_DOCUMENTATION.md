@@ -150,12 +150,14 @@ ElegantShop is a premium e-commerce platform built with Next.js, featuring a mod
 - **Zustand** - State management for cart and wishlist
 - **React Hook Form** - Form handling and validation
 - **Lucide React** - Icon library
+- **Custom Hooks** - For abstracting complex logic from components.
 
 ### Backend & Database
 - **Supabase** - Backend as a Service
 - **PostgreSQL** - Database with Row Level Security
 - **Supabase Storage** - File storage for receipts and images
 - **Supabase Auth** - Authentication system (ready for implementation)
+- **Modular Supabase Helpers** - Supabase helper functions are organized by domain in the `lib/supabase` directory.
 
 ### Key Libraries
 - **@radix-ui** - Accessible UI components

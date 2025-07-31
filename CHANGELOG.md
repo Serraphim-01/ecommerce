@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.3.0] - 2025-07-31
+
+### Refactoring
+- **Codebase Refactoring**:
+  - Refactored the entire codebase to split large files into smaller, more manageable components and hooks.
+  - Ensured that no file exceeds the 300-line limit, improving code readability and maintainability.
+  - Key refactored components include `AddProductModal`, `CheckoutPage`, `Header`, and `AuthModal`.
+  - The `lib/supabase.ts` file was split into multiple domain-specific files for better organization.
+  - Updated all relevant import statements to reflect the new file structure.
+
 ## [1.2.0] - 2025-07-28
 
 ### Added

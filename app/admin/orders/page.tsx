@@ -4,7 +4,9 @@ import { useState, useEffect } from 'react';
 import { Package, ShoppingCart, Users, TrendingUp, Eye, Edit, Trash2, Check, X } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { Order, Product, User } from '@/types';
-import { getOrders, updateOrderStatus, getProducts, getUsers } from '@/lib/supabase';
+import { getOrders, updateOrderStatus } from '@/lib/supabase/orders';
+import { getProducts } from '@/lib/supabase/products';
+import { getUsers } from '@/lib/supabase/users';
 import Link from 'next/link';
 
 const OrdersPage = () => {

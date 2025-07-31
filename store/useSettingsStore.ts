@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { getSettings } from '@/lib/supabase';
+import { getSettings } from '@/lib/supabase/settings';
 
 interface SettingsState {
   settings: any;

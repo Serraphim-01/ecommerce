@@ -7,7 +7,7 @@ import {
   getProducts,
   updateProductVisibility,
   deleteProduct,
-} from "@/lib/supabase";
+} from "@/lib/supabase/products";
 import AddProductModal from "@/app/admin/components/AddProductModal";
 import Link from "next/link";
 import { useRouter } from "next/navigation";

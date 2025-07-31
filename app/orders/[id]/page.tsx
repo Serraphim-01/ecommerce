@@ -7,7 +7,7 @@ import { motion } from 'framer-motion';
 import { Package, MapPin, Clock, Phone, Mail } from 'lucide-react';
 import OrderTimeline from '@/components/OrderTimeline';
 import { Order } from '@/types';
-import { getOrderById } from '@/lib/supabase';
+import { getOrderById } from '@/lib/supabase/orders';
 
 const OrderDetailPage = () => {
   const params = useParams();

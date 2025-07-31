@@ -1,7 +1,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { supabase, getShippingInfo, saveShippingInfo } from '@/lib/supabase';
+import { supabase } from '@/lib/supabase/client';
+import { getShippingInfo, saveShippingInfo } from '@/lib/supabase/shipping';
 import { useStore } from '@/store/useStore';
 import { useToast } from '@/hooks/use-toast';
 
