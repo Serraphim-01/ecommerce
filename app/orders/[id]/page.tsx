@@ -2,6 +2,7 @@
 export const dynamic = "force-dynamic";
 
 import { useState, useEffect } from 'react';
+import Image from 'next/image';
 import { useParams } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { Package, MapPin, Clock, Phone, Mail } from 'lucide-react';
@@ -65,7 +66,7 @@ const OrderDetailPage = () => {
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
           <h2 className="text-2xl font-bold text-gray-900 mb-4">Order Not Found</h2>
-          <p className="text-gray-600">The order you're looking for doesn't exist.</p>
+          <p className="text-gray-600">The order you&apos;re looking for doesn&apos;t exist.</p>
         </div>
       </div>
     );
@@ -159,10 +160,28 @@ const OrderDetailPage = () => {
                   <span className="font-medium capitalize">{order.status.replace('_', ' ')}</span>
                 </div>
                 {order.payment_receipt && (
-                  <div className="mt-4">
-                    <p className="text-sm text-gray-600 mb-2">Payment Receipt:</p>
-                    <div className="bg-gray-50 p-3 rounded-lg">
-                      <p className="text-sm text-blue-600">Receipt uploaded successfully</p>
+                  <div className="mt-6 pt-4 border-t">
+                    <h3 className="text-md font-semibold text-gray-800 mb-2">Payment Receipt</h3>
+                    <p className="text-sm text-gray-600 mb-4">
+                      Your payment receipt has been uploaded. You can view it below.
+                    </p>
+                    <a
+                      href={order.payment_receipt}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-600 hover:underline font-medium"
+                    >
+                      View Full Receipt
+                    </a>
+                    <div className="mt-4">
+                      <Image
+                        src={order.payment_receipt}
+                        alt="Payment receipt"
+                        width={0}
+                        height={0}
+                        sizes="100vw"
+                        className="w-full h-auto rounded-lg border shadow-sm"
+                      />
                     </div>
                   </div>
                 )}
