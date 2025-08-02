@@ -38,8 +38,8 @@ export interface Order {
   state: string;
   items: CartItem[];
   total_amount: number;
-  status: 'pending' | 'payment_review' | 'paid' | 'preparing' | 'ready_for_delivery' | 'shipped' | 'delivered';
-  payment_receipt?: string;
+  status: 'pending' | 'paid' | 'preparing' | 'ready_for_delivery' | 'shipped' | 'delivered' | 'rejected';
+  rejection_reason?: string;
   created_at: string;
   updated_at: string;
   user: User;

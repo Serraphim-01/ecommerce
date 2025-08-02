@@ -33,6 +33,18 @@ export const updateProduct = async (productId: string, updates: Partial<Product>
   return data;
 };
 
+export const rejectOrder = async (orderId: string, rejection_reason: string): Promise<Order> => {
+  const { data, error } = await supabase
+    .from('orders')
+    .update({ status: 'rejected', rejection_reason, updated_at: new Date().toISOString() })
+    .eq('id', orderId)
+    .select()
+    .maybeSingle();
+
+  if (error) throw error;
+  return data;
+};
+
 export const updateProductVisibility = async (productId: string, is_visible: boolean): Promise<Product> => {
   const { data, error } = await supabase
     .from('products')
@@ -249,22 +261,6 @@ export const updateOrderStatus = async (orderId: string, status: Order['status']
   
   if (error) throw error;
   return data;
-};
-
-export const uploadPaymentReceipt = async (file: File, orderId: string): Promise<string> => {
-  const fileName = `payment-receipts/${orderId}-${Date.now()}.${file.name.split('.').pop()}`;
-  
-  const { data, error } = await supabase.storage
-    .from('receipts')
-    .upload(fileName, file);
-  
-  if (error) throw error;
-  
-  const { data: { publicUrl } } = supabase.storage
-    .from('receipts')
-    .getPublicUrl(fileName);
-  
-  return publicUrl;
 };
 
 // Search products

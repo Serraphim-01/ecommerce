@@ -2,22 +2,17 @@
 
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { supabase } from "@/lib/supabase";
 import { Order } from "@/types";
-import { getOrderById, updateOrderStatus } from "@/lib/supabase";
+import { getOrderById, updateOrderStatus, rejectOrder } from "@/lib/supabase";
 import Link from "next/link";
 import {
   ArrowLeft,
   CheckCircle,
   Clock,
-  Package,
-  Truck,
-  Star,
   XCircle,
   AlertTriangle,
 } from "lucide-react";
 
-// This will be the new AdminOrderTimeline component, defined in this file for now.
 const AdminOrderTimeline = ({
   order,
   onStatusUpdate,
@@ -27,12 +22,12 @@ const AdminOrderTimeline = ({
 }) => {
   const steps = [
     { id: "pending", title: "Pending" },
-    { id: "payment_review", title: "Payment Review" },
     { id: "paid", title: "Payment Confirmed" },
     { id: "preparing", title: "Preparing Order" },
     { id: "ready_for_delivery", title: "Ready for Delivery" },
     { id: "shipped", title: "Shipped" },
     { id: "delivered", title: "Delivered" },
+    { id: "rejected", title: "Rejected" },
   ];
 
   const currentStepIndex = steps.findIndex((step) => step.id === order.status);
@@ -57,7 +52,6 @@ const AdminOrderTimeline = ({
         {steps.map((step, index) => {
           const isCompleted = index < currentStepIndex;
           const isCurrent = index === currentStepIndex;
-          const isFuture = index > currentStepIndex;
 
           return (
             <div key={step.id} className="flex items-start">
@@ -67,12 +61,14 @@ const AdminOrderTimeline = ({
                     isCompleted
                       ? "bg-green-500"
                       : isCurrent
-                      ? "bg-blue-500"
+                      ? order.status === 'rejected' ? 'bg-red-500' : 'bg-blue-500'
                       : "bg-gray-300"
                   }`}
                 >
                   {isCompleted ? (
                     <CheckCircle className="text-white w-5 h-5" />
+                  ) : order.status === 'rejected' && isCurrent ? (
+                    <XCircle className="text-white w-5 h-5" />
                   ) : (
                     <Clock className="text-white w-5 h-5" />
                   )}
@@ -89,7 +85,7 @@ const AdminOrderTimeline = ({
                 <p
                   className={`font-semibold ${
                     isCurrent
-                      ? "text-blue-600"
+                      ? order.status === 'rejected' ? 'text-red-600' : "text-blue-600"
                       : isCompleted
                       ? "text-gray-800"
                       : "text-gray-500"
@@ -97,9 +93,9 @@ const AdminOrderTimeline = ({
                 >
                   {step.title}
                 </p>
-                {isCurrent && (
+                {isCurrent && order.status !== 'rejected' && (
                   <div className="mt-2 space-x-2">
-                    {index < steps.length - 1 && (
+                    {index < steps.length - 2 && ( // -2 because rejected is a final state
                       <button
                         onClick={() =>
                           handleUpdate(steps[index + 1].id as Order["status"])
@@ -126,6 +122,7 @@ const AdminOrderDetailPage = () => {
   const [order, setOrder] = useState<Order | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [rejectionReason, setRejectionReason] = useState("");
 
   useEffect(() => {
     const fetchOrder = async () => {
@@ -165,8 +162,27 @@ const AdminOrderDetailPage = () => {
     }
   };
 
-  const confirmPayment = () => handleStatusUpdate("paid");
-  const rejectPayment = () => handleStatusUpdate("pending");
+  const handleRejectOrder = async () => {
+    if (!order) return;
+    if (!rejectionReason.trim()) {
+      alert("Please provide a reason for rejection.");
+      return;
+    }
+    if (window.confirm("Are you sure you want to reject this order?")) {
+      try {
+        const updatedOrder = await rejectOrder(order.id, rejectionReason);
+        if (!updatedOrder) {
+          alert("Order not found or you don’t have permission to update.");
+          return;
+        }
+        setOrder(updatedOrder);
+        setRejectionReason("");
+      } catch (err) {
+        console.error("Failed to reject order:", err);
+        alert("Failed to reject order.");
+      }
+    }
+  };
 
   if (loading) {
     return (
@@ -192,6 +208,8 @@ const AdminOrderDetailPage = () => {
     );
   }
 
+  const isFinalState = order.status === 'delivered' || order.status === 'rejected' || order.status === 'shipped';
+
   return (
     <div className="min-h-screen bg-gray-50 p-8">
       <div className="max-w-4xl mx-auto">
@@ -209,56 +227,6 @@ const AdminOrderDetailPage = () => {
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2 space-y-8">
-            {order.status === "payment_review" && (
-              <div className="bg-white p-6 rounded-lg shadow-md border-l-4 border-yellow-400">
-                <h3 className="text-xl font-bold mb-4 flex items-center">
-                  <AlertTriangle className="w-6 h-6 mr-2 text-yellow-500" />
-                  Confirm Payment
-                </h3>
-                {order.payment_receipt ? (
-                  <div>
-                    <p className="mb-4">
-                      A payment receipt has been uploaded. Please review it and
-                      confirm the payment.
-                    </p>
-                    <a
-                      href={order.payment_receipt}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-blue-600 hover:underline font-semibold mb-6 block"
-                    >
-                      View Payment Receipt
-                    </a>
-                    <img
-                      src={order.payment_receipt}
-                      alt="Payment Receipt"
-                      className="max-w-full h-auto rounded-md border"
-                    />
-                    <div className="mt-6 flex space-x-4">
-                      <button
-                        onClick={confirmPayment}
-                        className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 flex items-center"
-                      >
-                        <CheckCircle className="w-5 h-5 mr-2" />
-                        Approve Payment
-                      </button>
-                      <button
-                        onClick={rejectPayment}
-                        className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 flex items-center"
-                      >
-                        <XCircle className="w-5 h-5 mr-2" />
-                        Reject Payment
-                      </button>
-                    </div>
-                  </div>
-                ) : (
-                  <p className="text-gray-600">
-                    No payment receipt was uploaded for this order.
-                  </p>
-                )}
-              </div>
-            )}
-
             <AdminOrderTimeline
               order={order}
               onStatusUpdate={handleStatusUpdate}
@@ -290,6 +258,46 @@ const AdminOrderDetailPage = () => {
                 </p>
               </div>
             </div>
+
+            {!isFinalState && (
+              <div className="bg-white p-6 rounded-lg shadow-md border-l-4 border-red-400">
+                <h3 className="text-xl font-bold mb-4 flex items-center">
+                  <XCircle className="w-6 h-6 mr-2 text-red-500" />
+                  Reject Order
+                </h3>
+                <p className="text-gray-600 mb-4">
+                  If you need to reject this order, please provide a reason below. This reason will be visible to the customer.
+                </p>
+                <textarea
+                  value={rejectionReason}
+                  onChange={(e) => setRejectionReason(e.target.value)}
+                  placeholder="Enter rejection reason..."
+                  className="w-full p-2 border rounded-md"
+                  rows={3}
+                />
+                <div className="mt-4">
+                  <button
+                    onClick={handleRejectOrder}
+                    className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 flex items-center"
+                  >
+                    <XCircle className="w-5 h-5 mr-2" />
+                    Reject Order
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {order.status === 'rejected' && (
+              <div className="bg-red-50 p-6 rounded-lg shadow-md border-l-4 border-red-400">
+                <h3 className="text-xl font-bold mb-4 flex items-center">
+                  <AlertTriangle className="w-6 h-6 mr-2 text-red-500" />
+                  Order Rejected
+                </h3>
+                <p className="text-gray-700">
+                  <strong>Reason:</strong> {order.rejection_reason}
+                </p>
+              </div>
+            )}
           </div>
 
           <div className="space-y-8">

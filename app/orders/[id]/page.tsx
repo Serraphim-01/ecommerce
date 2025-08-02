@@ -142,30 +142,29 @@ const OrderDetailPage = () => {
               </div>
             </div>
 
-            {/* Payment Information */}
+            {order.status === 'rejected' && (
+              <div className="bg-red-50 p-6 rounded-lg shadow-md border-l-4 border-red-400">
+                <h3 className="text-xl font-bold mb-4 flex items-center">
+                  Order Rejected
+                </h3>
+                <p className="text-gray-700">
+                  <strong>Reason:</strong> {order.rejection_reason}
+                </p>
+              </div>
+            )}
+
+            {/* Order Summary */}
             <div className="bg-white rounded-lg shadow-md p-6">
-              <h2 className="text-lg font-semibold text-gray-900 mb-4">Payment Information</h2>
+              <h2 className="text-lg font-semibold text-gray-900 mb-4">Order Summary</h2>
               <div className="space-y-3">
                 <div className="flex justify-between">
-                  <span className="text-gray-600">Payment Method</span>
-                  <span className="font-medium">Bank Transfer</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Amount</span>
+                  <span className="text-gray-600">Total Amount</span>
                   <span className="font-medium">₦{order.total_amount.toLocaleString()}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-600">Status</span>
                   <span className="font-medium capitalize">{order.status.replace('_', ' ')}</span>
                 </div>
-                {order.payment_receipt && (
-                  <div className="mt-4">
-                    <p className="text-sm text-gray-600 mb-2">Payment Receipt:</p>
-                    <div className="bg-gray-50 p-3 rounded-lg">
-                      <p className="text-sm text-blue-600">Receipt uploaded successfully</p>
-                    </div>
-                  </div>
-                )}
               </div>
             </div>
           </div>

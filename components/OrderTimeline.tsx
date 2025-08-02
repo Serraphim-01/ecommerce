@@ -1,7 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { ShoppingCart, FileClock, CheckCircle, Package, PackageCheck, Truck, Star } from 'lucide-react';
+import { ShoppingCart, CheckCircle, Package, PackageCheck, Truck, Star, XCircle } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { Order } from '@/types';
 
@@ -28,12 +28,12 @@ const OrderTimeline = ({ status, createdAt }: OrderTimelineProps) => {
 
   const steps = [
     { id: 'pending', title: 'Order Placed', description: 'We have received your order.', icon: ShoppingCart, color: 'bg-gray-500' },
-    { id: 'payment_review', title: 'Payment in Review', description: 'We are reviewing your payment receipt.', icon: FileClock, color: 'bg-blue-500' },
     { id: 'paid', title: 'Payment Confirmed', description: 'Your payment has been successfully verified.', icon: CheckCircle, color: 'bg-green-500' },
     { id: 'preparing', title: 'Getting Order Ready', description: 'We are preparing your order for shipment.', icon: Package, color: 'bg-purple-500' },
     { id: 'ready_for_delivery', title: 'Ready for Delivery', description: 'Your order is packaged and ready for the courier.', icon: PackageCheck, color: 'bg-indigo-500' },
     { id: 'shipped', title: 'Out for Delivery', description: 'Your order is on its way to you.', icon: Truck, color: 'bg-orange-500' },
     { id: 'delivered', title: 'Delivered', description: 'Your order has been delivered. Enjoy!', icon: Star, color: 'bg-teal-500' },
+    { id: 'rejected', title: 'Order Rejected', description: 'This order has been rejected.', icon: XCircle, color: 'bg-red-500' },
   ];
 
   const getStepIndex = (currentStatus: Order['status']) => {
