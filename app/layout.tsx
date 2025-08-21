@@ -20,13 +20,15 @@ export async function generateMetadata(): Promise<Metadata> {
     'Discover premium fashion and lifestyle products with seamless shopping experience';
   const siteLogo = settings.site_logo;
 
+  const favicon = settings.faviconUrl || siteLogo || '/favicon.ico';
+
   return {
     title: `${siteName} - Premium Fashion & Lifestyle`,
     description: siteDescription,
     keywords: 'fashion, lifestyle, premium, shopping, ecommerce, Nigeria',
     authors: [{ name: siteName }],
     icons: {
-      icon: siteLogo || '/favicon.ico',
+      icon: favicon,
     },
     openGraph: {
       title: `${siteName} - Premium Fashion & Lifestyle`,

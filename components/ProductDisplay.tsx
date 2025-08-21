@@ -83,7 +83,11 @@ const ProductDisplay = ({
         {/* Quantity */}
         <div>
           <h3 className="text-sm font-semibold text-gray-900 mb-2">Quantity in Stock</h3>
-          <p className="text-gray-600">{product.quantity}</p>
+          <p className="text-gray-600">
+            {selectedColor && selectedSize
+              ? product.variants.find(v => v.color === selectedColor && v.size === selectedSize)?.quantity ?? 0
+              : 'Select color and size to see quantity'}
+          </p>
         </div>
 
         {/* Delivery Options */}
@@ -111,7 +115,7 @@ const ProductDisplay = ({
         <div>
           <h3 className="text-sm font-semibold text-gray-900 mb-2">Color</h3>
           <div className="flex space-x-2">
-            {product.color?.map((color) => (
+            {[...new Set(product.variants.map(v => v.color))].map((color) => (
               <button
                 key={color}
                 onClick={() => onColorChange(color)}
@@ -129,15 +133,16 @@ const ProductDisplay = ({
         <div>
           <h3 className="text-sm font-semibold text-gray-900 mb-2">Size</h3>
           <div className="flex space-x-2">
-            {product.size?.map((size) => (
+            {product.variants.filter(v => v.color === selectedColor).map((variant) => (
               <button
-                key={size}
-                onClick={() => onSizeChange(size)}
+                key={variant.size}
+                onClick={() => onSizeChange(variant.size)}
                 className={`px-4 py-2 rounded-lg border ${
-                  selectedSize === size ? 'border-blue-600 ring-2 ring-blue-500' : 'border-gray-300'
+                  selectedSize === variant.size ? 'border-blue-600 ring-2 ring-blue-500' : 'border-gray-300'
                 }`}
+                disabled={!selectedColor}
               >
-                {size}
+                {variant.size}
               </button>
             ))}
           </div>

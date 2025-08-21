@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { ArrowLeft, Edit, Save } from 'lucide-react';
 import Link from 'next/link';
-import { getSettings, updateSetting, uploadLogo } from '@/lib/supabase';
+import { getSettings, updateSetting, uploadLogo, uploadFavicon } from '@/lib/supabase';
 
 const SettingsPage = () => {
   const [settings, setSettings] = useState<any>({});
@@ -68,6 +68,22 @@ const SettingsPage = () => {
     } catch (error) {
       console.error("Error uploading logo:", error);
       alert("Failed to upload logo");
+    }
+  };
+
+  const handleFaviconUpload = async (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    try {
+      const faviconUrl = await uploadFavicon(file);
+      handleSettingChange("faviconUrl", faviconUrl);
+      await handleSave("faviconUrl");
+    } catch (error) {
+      console.error("Error uploading favicon:", error);
+      alert("Failed to upload favicon");
     }
   };
 
@@ -214,6 +230,34 @@ const SettingsPage = () => {
                 >
                   {editMode.logo ? <Save className="w-5 h-5 mr-2" /> : <Edit className="w-5 h-5 mr-2" />}
                   {editMode.logo ? 'Save Logo Settings' : 'Edit Logo Settings'}
+                </button>
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Favicon</label>
+              <div className="mt-2 space-y-4">
+                <div>
+                  <label className="text-sm font-medium text-gray-700">Favicon Image</label>
+                  <div className="mt-1 flex items-center">
+                    {settings.faviconUrl && (
+                      <img src={settings.faviconUrl} alt="Favicon preview" className="h-12 w-12 object-contain mr-4" />
+                    )}
+                    <input
+                      type="file"
+                      accept="image/png, image/jpeg, image/x-icon"
+                      onChange={handleFaviconUpload}
+                      className="text-sm"
+                      disabled={!editMode.favicon}
+                    />
+                  </div>
+                </div>
+                <button
+                  onClick={() => setEditMode({ ...editMode, favicon: !editMode.favicon })}
+                  className="inline-flex items-center px-3 py-1 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700"
+                >
+                  {editMode.favicon ? <Save className="w-5 h-5 mr-2" /> : <Edit className="w-5 h-5 mr-2" />}
+                  {editMode.favicon ? 'Save Favicon' : 'Edit Favicon'}
                 </button>
               </div>
             </div>

@@ -42,7 +42,7 @@ const ProgressSteps: FC<ProgressStepsProps> = ({ currentStep }) => {
               >
                 <IconComponent className="w-5 h-5" />
               </div>
-              <div className="ml-3">
+              <div className={`ml-3 ${isActive ? 'block' : 'hidden md:block'}`}>
                 <p
                   className={`text-sm font-medium ${
                     isActive ? "text-blue-600" : "text-gray-500"
@@ -59,7 +59,7 @@ const ProgressSteps: FC<ProgressStepsProps> = ({ currentStep }) => {
                 </p>
               </div>
               {index < steps.length - 1 && (
-                <div className="flex-1 h-0.5 bg-gray-200 mx-4">
+                <div className="flex-1 h-0.5 bg-gray-200 mx-2 md:mx-4">
                   <div
                     className={`h-full ${
                       isCompleted ? "bg-green-600" : "bg-gray-200"

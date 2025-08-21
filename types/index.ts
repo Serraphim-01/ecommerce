@@ -1,22 +1,28 @@
-export interface Product {
+export interface ProductVariant {
   id: string;
+  product_id: string;
+  color: string;
+  size: string;
+  quantity: number;
+}
+
+export interface Product {
+  id:string;
   name: string;
   description: string;
   price: number;
   original_price?: number;
   category: string;
-  size: string[];
-  color: string[];
   images: string[];
   in_stock: boolean;
   featured: boolean;
   is_visible: boolean;
   average_rating: number;
-  quantity: number;
   discount?: number;
   delivery_options: string[];
   created_at: string;
   updated_at: string;
+  variants: ProductVariant[];
 }
 
 export interface CartItem {

@@ -24,31 +24,31 @@ const ProductsPage = () => {
   const [sortBy, setSortBy] = useState('newest');
   const [showFilters, setShowFilters] = useState(false);
 
-  useEffect(() => {
-    const loadData = async () => {
-      try {
-        setLoading(true);
-        setError(null);
-        const [allProducts, fetchedCategories] = await Promise.all([
-          getProducts(),
-          getCategories(),
-        ]);
-        setProducts(allProducts);
-        setFilteredProducts(allProducts);
-        setCategories(fetchedCategories);
-      } catch (err) {
-        console.error('Error loading data:', err);
-        setError('Failed to load data');
-        setProducts([]);
-        setFilteredProducts([]);
-        setCategories([]);
-      } finally {
-        setLoading(false);
-      }
-    };
+  const loadData = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const [allProducts, fetchedCategories] = await Promise.all([
+        getProducts(),
+        getCategories(),
+      ]);
+      setProducts(allProducts);
+      setFilteredProducts(allProducts);
+      setCategories(fetchedCategories);
+    } catch (err) {
+      console.error('Error loading data:', err);
+      setError('Failed to load data');
+      setProducts([]);
+      setFilteredProducts([]);
+      setCategories([]);
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  useEffect(() => {
     loadData();
-  }, []);
+  }, [initialCategory]);
 
   // Filter and sort products
   useEffect(() => {

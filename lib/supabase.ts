@@ -134,6 +134,22 @@ export const uploadLogo = async (file: File): Promise<string> => {
   return data.publicUrl;
 };
 
+export const uploadFavicon = async (file: File): Promise<string> => {
+  const fileName = `favicon-${Date.now()}.${file.name.split(".").pop()}`;
+
+  const { error } = await supabase.storage
+    .from("favicons")
+    .upload(fileName, file, {
+      contentType: file.type,
+      upsert: true,
+    });
+
+  if (error) throw error;
+
+  const { data } = supabase.storage.from("favicons").getPublicUrl(fileName);
+  return data.publicUrl;
+};
+
 export const uploadReceipt = async (file: File): Promise<string> => {
   const fileName = `receipt-${Date.now()}.${file.name.split(".").pop()}`;
 
@@ -292,22 +308,6 @@ export const createOrder = async (
     throw error;
   }
 
-  // Decrement product quantities
-  if (orderData.items && orderData.items.length > 0) {
-    for (const item of orderData.items) {
-      const { error: updateError } = await supabase.rpc("decrement_quantity", {
-        pid: item.product.id,
-        qty: item.quantity,
-      });
-
-      if (updateError) {
-        console.error(
-          `❌ Failed to update product ${item.product.id}`,
-          updateError
-        );
-      }
-    }
-  }
 
   // Send emails after successful order creation
   try {
@@ -357,6 +357,25 @@ export const updateOrderStatus = async (
     .maybeSingle();
 
   if (error) throw error;
+
+  if (data && status === "shipped") {
+    for (const item of data.items) {
+      const variant = item.product.variants.find(v => v.color === item.color && v.size === item.size);
+      if (variant) {
+        const { error: updateError } = await supabase.rpc("decrement_variant_quantity", {
+          variant_id: variant.id,
+          qty: item.quantity,
+        });
+
+        if (updateError) {
+          console.error(
+            `❌ Failed to update variant ${variant.id}`,
+            updateError
+          );
+        }
+      }
+    }
+  }
 
   if (data && (status === "shipped" || status === "delivered" || status === "cancelled")) {
     try {

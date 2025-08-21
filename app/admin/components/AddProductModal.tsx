@@ -29,11 +29,9 @@ const AddProductModal = ({
       price: 0,
       original_price: 0,
       category: "",
-      quantity: 0,
-      size: [""],
-      color: [""],
       images: [],
       delivery_options: [],
+      variants: [],
     },
   ]);
 
@@ -71,11 +69,9 @@ const AddProductModal = ({
         price: 0,
         original_price: 0,
         category: categories[0]?.name || "",
-        quantity: 0,
-        size: [""],
-        color: [""],
         images: [],
         delivery_options: [],
+        variants: [],
       },
     ]);
   };
@@ -148,17 +144,25 @@ const AddProductModal = ({
           price: product.price,
           original_price: product.original_price,
           category: product.category,
-          size: product.size.filter((s) => s.trim() !== ""),
-          color: product.color.filter((c) => c.trim() !== ""),
           images: imageUrls,
-          quantity: product.quantity,
           delivery_options: product.delivery_options,
           featured: false,
         };
 
-        const { error } = await supabase.from("products").insert(productData);
+        const { data: newProduct, error } = await supabase.from("products").insert(productData).select().single();
 
         if (error) throw error;
+
+        if (newProduct) {
+          const variantsData = product.variants.map(variant => ({
+            ...variant,
+            product_id: newProduct.id,
+          }));
+
+          const { error: variantsError } = await supabase.from("product_variants").insert(variantsData);
+
+          if (variantsError) throw variantsError;
+        }
       }
 
       toast({

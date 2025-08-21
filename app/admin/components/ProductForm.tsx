@@ -5,18 +5,19 @@ import { useDropzone } from 'react-dropzone';
 import { X, Plus, Minus, Upload, Trash2 } from 'lucide-react';
 import { Product, Category } from '@/types';
 import { supabase } from '@/lib/supabase';
+import { revalidatePath } from 'next/cache';
+
+import { ProductVariant } from '@/types';
 
 export interface ProductFormData {
   name: string;
-  description: string;
+  description:string;
   price: number;
   original_price?: number;
   category: string;
-  quantity: number;
-  size: string[];
-  color: string[];
   images: (File | string)[];
   delivery_options: string[];
+  variants: ProductVariant[];
 }
 
 interface ProductFormProps {
@@ -70,6 +71,7 @@ const ProductForm = ({
       setNewCategoryName('');
       setNewCategorySlug('');
       setNewCategoryDescription('');
+      revalidatePath('/products');
     }
   };
 
@@ -100,24 +102,26 @@ const ProductForm = ({
     });
   };
 
-  const addArrayItem = (field: 'size' | 'color') => {
+  const addVariant = () => {
     setFormData((prev) => ({
       ...prev,
-      [field]: [...prev[field], ''],
+      variants: [...prev.variants, { id: '', product_id: '', color: '', size: '', quantity: 0 }],
     }));
   };
 
-  const updateArrayItem = (field: 'size' | 'color', itemIndex: number, value: string) => {
+  const updateVariant = (index: number, field: keyof ProductVariant, value: string | number) => {
     setFormData((prev) => ({
       ...prev,
-      [field]: prev[field].map((item, j) => (j === itemIndex ? value : item)),
+      variants: prev.variants.map((variant, i) =>
+        i === index ? { ...variant, [field]: value } : variant
+      ),
     }));
   };
 
-  const removeArrayItem = (field: 'size' | 'color', itemIndex: number) => {
+  const removeVariant = (index: number) => {
     setFormData((prev) => ({
       ...prev,
-      [field]: prev[field].filter((_, j) => j !== itemIndex),
+      variants: prev.variants.filter((_, i) => i !== index),
     }));
   };
 
@@ -240,68 +244,55 @@ const ProductForm = ({
               step="0.01"
             />
           </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Quantity</label>
-            <input
-              type="number"
-              name="quantity"
-              value={formData.quantity}
-              onChange={handleInputChange}
-              className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              min="0"
-            />
-          </div>
         </div>
       </div>
 
-      {/* Sizes */}
+      {/* Variants */}
       <div className="mt-6">
-        <label className="block text-sm font-medium text-gray-700 mb-2">Available Sizes</label>
-        <div className="space-y-2">
-          {formData.size.map((size, sizeIndex) => (
-            <div key={sizeIndex} className="flex items-center space-x-2">
+        <label className="block text-sm font-medium text-gray-700 mb-2">Product Variants</label>
+        <div className="space-y-4">
+          {formData.variants.map((variant, index) => (
+            <div key={index} className="grid grid-cols-4 gap-4 p-4 border rounded-lg">
               <input
                 type="text"
-                value={size}
-                onChange={(e) => updateArrayItem('size', sizeIndex, e.target.value)}
-                className="flex-1 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="e.g., S, M, L, XL"
+                placeholder="Color (e.g., Red)"
+                value={variant.color}
+                onChange={(e) => updateVariant(index, 'color', e.target.value)}
+                className="col-span-1 border border-gray-300 rounded-md px-3 py-2"
               />
-              <button type="button" onClick={() => removeArrayItem('size', sizeIndex)} className="text-red-600 hover:text-red-800">
-                <Minus className="w-4 h-4" />
+              <input
+                type="text"
+                placeholder="Size (e.g., M)"
+                value={variant.size}
+                onChange={(e) => updateVariant(index, 'size', e.target.value)}
+                className="col-span-1 border border-gray-300 rounded-md px-3 py-2"
+              />
+              <input
+                type="number"
+                placeholder="Quantity"
+                value={variant.quantity}
+                onChange={(e) => updateVariant(index, 'quantity', parseInt(e.target.value) || 0)}
+                className="col-span-1 border border-gray-300 rounded-md px-3 py-2"
+                min="0"
+              />
+              <button
+                type="button"
+                onClick={() => removeVariant(index)}
+                className="col-span-1 text-red-600 hover:text-red-800 flex items-center justify-center"
+              >
+                <Trash2 className="w-5 h-5" />
               </button>
             </div>
           ))}
-          <button type="button" onClick={() => addArrayItem('size')} className="flex items-center space-x-1 text-blue-600 hover:text-blue-800">
-            <Plus className="w-4 h-4" />
-            <span>Add Size</span>
-          </button>
         </div>
-      </div>
-
-      {/* Colors */}
-      <div className="mt-6">
-        <label className="block text-sm font-medium text-gray-700 mb-2">Available Colors</label>
-        <div className="space-y-2">
-          {formData.color.map((color, colorIndex) => (
-            <div key={colorIndex} className="flex items-center space-x-2">
-              <input
-                type="text"
-                value={color}
-                onChange={(e) => updateArrayItem('color', colorIndex, e.target.value)}
-                className="flex-1 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="e.g., Red, Blue, Black"
-              />
-              <button type="button" onClick={() => removeArrayItem('color', colorIndex)} className="text-red-600 hover:text-red-800">
-                <Minus className="w-4 h-4" />
-              </button>
-            </div>
-          ))}
-          <button type="button" onClick={() => addArrayItem('color')} className="flex items-center space-x-1 text-blue-600 hover:text-blue-800">
-            <Plus className="w-4 h-4" />
-            <span>Add Color</span>
-          </button>
-        </div>
+        <button
+          type="button"
+          onClick={addVariant}
+          className="mt-4 flex items-center space-x-1 text-blue-600 hover:text-blue-800"
+        >
+          <Plus className="w-4 h-4" />
+          <span>Add Variant</span>
+        </button>
       </div>
 
       {/* Images */}

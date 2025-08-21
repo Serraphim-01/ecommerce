@@ -94,9 +94,9 @@ const PaymentStep: FC<PaymentStepProps> = ({
               to the following bank account:
             </p>
             <div className="mt-2">
-              <p className="text-sm font-semibold">Bank Name: Access Bank</p>
-              <p className="text-sm font-semibold">Account Number: 1234567890</p>
-              <p className="text-sm font-semibold">Account Name: Praéde</p>
+              <p className="text-sm font-semibold">Bank Name: Polaris bank</p>
+              <p className="text-sm font-semibold">Account Number: 4092094793</p>
+              <p className="text-sm font-semibold">Account Name: PRAEDE LABEL ENTERPRISE</p>
             </div>
           </div>
           <button

@@ -45,7 +45,7 @@ const Footer = () => {
               <span className="text-xl font-bold text-gray-900">{settings.siteName}</span>
             </Link>
             <p className="text-gray-500 text-sm">
-              Unique fashion for unique people.
+              One brand, endless choices
             </p>
             <div className="flex space-x-4">
               {socialLinks.map((item) => (
