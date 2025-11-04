@@ -32,11 +32,26 @@ const ProductCard = ({ product }: ProductCardProps) => {
     e.preventDefault();
 
     if (!currentUserId) {
-      toast({
-        title: "Login Required",
-        description: "Please login to add items to your cart.",
-        variant: "destructive",
-      });
+      // Show login modal instead of toast
+      const loginModal = document.createElement('div');
+      loginModal.id = 'login-modal';
+      loginModal.innerHTML = `
+        <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div class="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+            <h3 class="text-lg font-semibold mb-4">Login Required</h3>
+            <p class="text-gray-600 mb-6">Please login to add items to your cart.</p>
+            <div class="flex space-x-3">
+              <button onclick="window.location.href='/auth/login?redirect=/products'" class="flex-1 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                Login
+              </button>
+              <button onclick="this.closest('#login-modal').remove()" class="flex-1 bg-gray-200 text-gray-800 px-4 py-2 rounded-lg hover:bg-gray-300 transition-colors">
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      `;
+      document.body.appendChild(loginModal);
       return;
     }
 
@@ -57,11 +72,26 @@ const ProductCard = ({ product }: ProductCardProps) => {
     e.preventDefault();
 
     if (!currentUserId) {
-      toast({
-        title: "Login Required",
-        description: "Please login to add items to your wishlist.",
-        variant: "destructive",
-      });
+      // Show login modal instead of toast
+      const loginModal = document.createElement('div');
+      loginModal.id = 'login-modal';
+      loginModal.innerHTML = `
+        <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div class="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+            <h3 class="text-lg font-semibold mb-4">Login Required</h3>
+            <p class="text-gray-600 mb-6">Please login to add items to your wishlist.</p>
+            <div class="flex space-x-3">
+              <button onclick="window.location.href='/auth/login?redirect=/products'" class="flex-1 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                Login
+              </button>
+              <button onclick="this.closest('#login-modal').remove()" class="flex-1 bg-gray-200 text-gray-800 px-4 py-2 rounded-lg hover:bg-gray-300 transition-colors">
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      `;
+      document.body.appendChild(loginModal);
       return;
     }
 

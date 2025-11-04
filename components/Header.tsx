@@ -43,7 +43,7 @@ const Header = () => {
 
   if (!mounted || loading) return null;
 
-  const isAuthPage = pathname.startsWith('/auth') || pathname.startsWith('/admin/signin') || pathname.startsWith('/admin/signup');
+  const isAuthPage = pathname.startsWith('/auth') || pathname.startsWith('/admin/signin');
 
   if (isAuthPage) {
     return (

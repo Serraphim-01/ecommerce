@@ -8,7 +8,54 @@ if (!supabaseUrl || !supabaseKey) {
   throw new Error("Missing Supabase environment variables");
 }
 
-export const supabase = createClient(supabaseUrl, supabaseKey);
+// Custom fetch function to handle CORS and API key
+const customFetch = async (url: RequestInfo | URL, options: RequestInit = {}) => {
+  const urlString = typeof url === 'string' ? url : url.toString();
+
+  // Prepare headers
+  const headers: Record<string, string> = {
+    ...options.headers as Record<string, string>,
+    'X-Client-Info': 'supabase-js-web',
+  };
+
+  // Add apikey header if it's a Supabase URL and not already present
+  if (urlString.includes('supabase.co') && !headers.apikey && !headers.authorization) {
+    headers.apikey = supabaseKey;
+  }
+
+  // For auth endpoints, ensure proper headers
+  if (urlString.includes('/auth/')) {
+    headers['Content-Type'] = headers['Content-Type'] || 'application/json';
+  }
+
+  try {
+    const response = await fetch(url, {
+      ...options,
+      headers,
+      mode: 'cors', // Explicitly set CORS mode
+    });
+
+    return response;
+  } catch (error) {
+    console.error('Custom fetch error:', error);
+    throw error;
+  }
+};
+
+export const supabase = createClient(supabaseUrl, supabaseKey, {
+  auth: {
+    autoRefreshToken: true,
+    persistSession: true,
+    detectSessionInUrl: true,
+    flowType: 'pkce', // Use PKCE flow for better security
+  },
+  global: {
+    headers: {
+      'X-Client-Info': 'supabase-js-web'
+    },
+    fetch: customFetch,
+  }
+});
 
 // ---------------- Products ----------------
 export const getProducts = async (): Promise<Product[]> => {
